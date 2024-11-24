@@ -20,7 +20,7 @@ export class News extends Component {
 
   componentDidUpdate(prevProps) {
     // If the language prop changes, re-fetch the news
-    if (prevProps.language !== this.props.language) {
+    if (prevProps.language !== this.props.language || prevProps.category !==this.props.category) {
       this.fetchNews(); // Re-fetch news when the language changes
     }
   }
@@ -28,7 +28,8 @@ export class News extends Component {
   // Method to fetch news articles from API
   fetchNews = async () => {
     this.setState({ loading: true }); // Show loading before fetch
-    let url = `https://newsapi.org/v2/everything?q=tesla&from=${new Date()}&sortBy=publishedAt&apiKey=25f323b9bf5446d2a37830b13524fb76&page=${this.state.page}&pageSize=12&language=${this.props.language}`;
+    const currentDate = new Date().toISOString().split('T')[0];
+    let url = `https://newsapi.org/v2/top-headlines?from=${currentDate}&sortBy=publishedAt&apiKey=25f323b9bf5446d2a37830b13524fb76&page=${this.state.page}&pageSize=12&language=${this.props.language}&category=${this.props.category}`;
     console.log("Fetching news from URL:", url); // Log the URL for debugging
     let data = await fetch(url);
     let parsedData = await data.json();
@@ -61,7 +62,7 @@ export class News extends Component {
 
     return (
       <div>
-        <div className='container my-3'>
+        <div className='container'>
           <h2>Headlines</h2>
 
           {/* Display loading GIF if data is being fetched */}
@@ -71,7 +72,7 @@ export class News extends Component {
             </div>
           ) : (
             <>
-              <div className='row'>
+              <div className='row item-center'>
                 {this.state.articles.map((element, i) => (
                   <div className='col-md-4' key={i}>
                     <Newsitems
